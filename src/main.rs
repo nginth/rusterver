@@ -1,11 +1,23 @@
 use std::net::{TcpStream, TcpListener, SocketAddrV4, Ipv4Addr};
-use std::io::{BufReader, BufRead, BufWriter};
+use std::io::{BufReader, BufRead, BufWriter, Read};
+use std::str;
 
 fn handle_request(request: &TcpStream) {
-    let stream = BufReader::new(request);
-    for line in stream.lines() {
-        println!("{}", line.unwrap());
-    }    
+    let mut stream = BufReader::with_capacity(1024, request);
+    println!("here");
+    
+    let len = {
+        let buf = stream.fill_buf().unwrap();
+        println!("not here");
+        let http_req = match str::from_utf8(&buf) {
+            Ok(string) => string,
+            Err(e) => panic!("cannot convert buf into utf8: {}", e),
+        };
+        println!("{}", http_req);
+        buf.len()
+    };
+    
+    stream.consume(len);
 }  
 
 fn main() {
