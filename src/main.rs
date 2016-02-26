@@ -1,6 +1,7 @@
 use std::net::{TcpStream, TcpListener, SocketAddrV4, Ipv4Addr};
 use std::io::{BufReader, BufRead, BufWriter, Write};
 use std::str;
+use std::thread;
 
 fn handle_request(request: &TcpStream) {
     let mut stream = BufReader::with_capacity(1024, request);
@@ -21,7 +22,7 @@ fn handle_request(request: &TcpStream) {
 
     // send response
     let mut stream = BufWriter::new(request);
-    stream.write(b"hello").unwrap();
+    stream.write(b"hello\n").unwrap();
 }  
 
 fn main() {
@@ -33,7 +34,11 @@ fn main() {
     println!("Server opened on port {}", socket_addr);
     for request in listener.incoming() {
         match request {
-            Ok(request) => handle_request(&request),
+            Ok(request) => {
+                thread::spawn(move || {
+                    handle_request(&request)
+                });
+            },
             Err(e)      => println!("{}", e),
         }
     }
