@@ -3,9 +3,13 @@ use std::io::{BufReader, BufRead, BufWriter, Write};
 use std::str;
 use std::thread;
 
+mod http;
+use http::HttpRequest;
+
 fn handle_request(request: &TcpStream) {
     let mut stream = BufReader::with_capacity(1024, request);
     
+    // block in order to borrow stream again for consume()
     let len = {
         // grab 1024 bytes from the stream
         let buf = stream.fill_buf().unwrap();
