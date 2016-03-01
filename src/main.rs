@@ -4,7 +4,8 @@ use std::str;
 use std::thread;
 
 mod http;
-use http::HttpRequest;
+use http::request::HttpRequest;
+use http::response::HttpResponse;
 
 fn handle_request(request: &TcpStream) {
     let mut stream = BufReader::with_capacity(1024, request);
@@ -26,6 +27,8 @@ fn handle_request(request: &TcpStream) {
 
     // send response
     let mut stream = BufWriter::new(request);
+    
+
     stream.write(b"hello\n").unwrap();
 }  
 
