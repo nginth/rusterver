@@ -42,6 +42,7 @@ impl<'a> HttpResponse<'a> {
      * Returns an immutable reference to a byte slice.
      */
     pub fn get_byte_response<'b>(&'b self, mut byte_vector: &'b mut Vec<u8>) -> &[u8] {
+        byte_vector.clear();
         self.construct_response(byte_vector);
         
         &byte_vector[..]
