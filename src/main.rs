@@ -27,9 +27,11 @@ fn handle_request(request: &TcpStream) {
 
     // send response
     let mut stream = BufWriter::new(request);
-    
+    let mut response = HttpResponse::new("200", "OK");
+    let mut buf = Vec::new();
+    let byte_response: &[u8] = response.get_byte_response(&mut buf);
 
-    stream.write(b"hello\n").unwrap();
+    stream.write(byte_response).unwrap();
 }  
 
 fn main() {

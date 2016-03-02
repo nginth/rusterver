@@ -1,23 +1,17 @@
-use std::string::String;
-
-pub struct HttpRequest {
-    method: String,
-    path: String,
-    version: String
+pub struct HttpRequest<'a> {
+    method: &'a str,
+    path: &'a str,
+    version: &'a str
 }
 
-impl HttpRequest {
+impl<'a> HttpRequest<'a> {
     pub fn print_method(&self) {
         println!("{}", self.method);
     }
 
     pub fn new_from_parts
-        (m: &str, p: &str, v: &str) -> HttpRequest {
+        (m: &'a str, p: &'a str, v: &'a str) -> HttpRequest<'a> {
         HttpRequest 
-        { method: m.to_string(), path: p.to_string(), version: v.to_string()}
-    }
-
-    pub fn new(request: String) {
-
+        { method: m, path: p, version: v}
     }
 }
