@@ -11,6 +11,7 @@ pub struct HttpResponse<'a> {
     code: &'a str,
     reason: &'a str,
     headers: Vec<&'a str>,
+    body: Vec<&'a str>,
 }
 
 impl<'a> HttpResponse<'a> {
@@ -21,8 +22,11 @@ impl<'a> HttpResponse<'a> {
                 code: code,
                 reason: reason,
                 headers: Vec::new(),
+                body: Vec::new(),
             };
-
+            ret.headers.push("Content-Type: text/html; charset=utf-8");
+            ret.headers.push("Content-Length: 47");
+            ret.body.push("<html> <h3> Welcome to rusterver! </h3> </html>");
             ret
     }
 
@@ -41,23 +45,38 @@ impl<'a> HttpResponse<'a> {
     /* Get the response that will be written to the TCPStream 
      * Returns an immutable reference to a byte slice.
      */
-    pub fn get_byte_response<'b>(&'b self, mut byte_vector: &'b mut Vec<u8>) -> &[u8] {
+    pub fn get_byte_response<'b>(&'b mut self, mut byte_vector: &'b mut Vec<u8>) -> &[u8] {
         byte_vector.clear();
         self.construct_response(byte_vector);
         
         &byte_vector[..]
     }
 
-    fn construct_response<'b>(&'b self, mut byte_vector: &'b mut Vec<u8>) {
+    fn construct_response<'b>(&'b mut self, mut byte_vector: &'b mut Vec<u8>) {
         const SPACE: u8 = b' ';
         const CRLF: &'static [u8; 2] = b"\r\n";
 
-        /* Construct response */
+        /* write response line */
         byte_vector.extend_from_slice(self.version.as_bytes());
         byte_vector.push(SPACE);
         byte_vector.extend_from_slice(self.code.as_bytes());
         byte_vector.push(SPACE);
         byte_vector.extend_from_slice(self.reason.as_bytes());
+        byte_vector.extend_from_slice(CRLF);
+
+        /* write headers */
+        for header in &self.headers {
+            byte_vector.extend_from_slice(header.as_bytes());
+            byte_vector.extend_from_slice(CRLF);
+        }
+
+        /* write the body */
+        byte_vector.extend_from_slice(CRLF);
+
+        for line in &self.body {
+            byte_vector.extend_from_slice(line.as_bytes());
+        }
+
         byte_vector.extend_from_slice(CRLF);
 
         println!("{}", String::from_utf8_lossy(byte_vector));

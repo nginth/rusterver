@@ -28,7 +28,7 @@ fn parse_request(stream: &TcpStream) -> HttpRequest {
 fn send_response(stream: &TcpStream) {
     // send response
     let mut writer = BufWriter::new(stream);
-    let response = HttpResponse::new("200", "OK");
+    let mut response = HttpResponse::new("200", "OK");
     let mut buf = Vec::new();
     let byte_response: &[u8] = response.get_byte_response(&mut buf);
 
