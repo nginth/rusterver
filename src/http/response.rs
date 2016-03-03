@@ -22,7 +22,7 @@ impl<'a> HttpResponse<'a> {
                 reason: reason,
                 headers: Vec::new(),
             };
-            ret.headers.push("header1");
+
             ret
     }
 

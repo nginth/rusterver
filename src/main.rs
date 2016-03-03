@@ -14,15 +14,15 @@ use http::response::HttpResponse;
 
 fn do_response(stream: &TcpStream) {
     let http_request: HttpRequest = parse_request(stream);
+    println!("method: {}, path: {}, version: {}", http_request.get_method(), http_request.get_path(), http_request.get_version());
     send_response(stream);
 } 
 
 fn parse_request(stream: &TcpStream) -> HttpRequest {
-    const CRLF: &'static str = "\r\n";
     let mut reader = BufReader::new(stream);
     let mut request_string = String::new();
 
-    HttpRequest::new(reader.lines())
+    HttpRequest::new(&mut reader.lines())
 } 
 
 fn send_response(stream: &TcpStream) {
